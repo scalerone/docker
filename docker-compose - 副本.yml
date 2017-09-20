@@ -1,0 +1,44 @@
+mysql:
+    build: ./mysql
+    expose : 
+      - "3306"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+      - ./logs:/var/log
+    environment:
+      MYSQL_ROOT_PASSWORD: sysroot
+
+redis:
+    build: ./redis
+    expose :
+      - "6379"
+    volumes :
+      - ./logs:/opt/logs
+      - ./data/logs:/var/lib/redis
+nginx:
+    build: ./nginx
+    ports:
+      - "1800:80"
+    links:
+      - "php"
+      - "redis"
+      - "mysql"
+    volumes:
+      - /Users/Chenjx/workspace/php/LightLamp:/opt/application
+      - ./logs:/opt/logs
+
+php:
+    build: ./php
+    expose :
+      - "9000"
+    # for xdebug
+    ports:
+     - "29000:9000"
+    links:
+      - "mysql"
+      - "redis"
+    volumes:
+      - /Users/Chenjx/workspace/php/LightLamp:/opt/application
+      - ./logs:/opt/logs
+      - ./tmp:/tmp
+    environment:
